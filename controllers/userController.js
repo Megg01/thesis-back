@@ -1,6 +1,21 @@
 const User = require("../models/user");
 const mongoose = require("mongoose");
 
+// login
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+  
+  User.findOne({ email: email }, (err, user) => {
+    if (!user.validPassword(password)) {
+      return res.status(403).json({ message: "Хэрэглэгчийн нууц үг таарсангүй"});
+    } else {
+      return res.status(200).json(user);
+    }
+  });
+
+};
+
+
 // get all
 const getUsers = async (req, res) => {
   const users = await User.find({}).sort({ createdAt: -1 });

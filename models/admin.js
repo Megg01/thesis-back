@@ -3,10 +3,26 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const adminSchema = new Schema({
-  name: {
+  fname: {
     type: String,
     required: true
-  }
+  },
+  lname: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  phoneNo: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
 }, {timestamps: true});
 
 
