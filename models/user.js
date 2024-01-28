@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const Schema = mongoose.Schema;
 
@@ -42,15 +42,15 @@ const userSchema = new Schema(
       required: () => this.isAuth,
     },
     imagePassportFace: {
-      type: Image,
+      type: String,
       required: () => this.isAuth,
     },
     imagePassportFront: {
-      type: Image,
+      type: String,
       required: () => this.isAuth,
     },
     imagePassportBack: {
-      type: Image,
+      type: String,
       required: () => this.isAuth,
     },
   },
@@ -65,4 +65,4 @@ userSchema.methods.validPassword = (password) => {
   return bcrypt.compareSync(password, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);

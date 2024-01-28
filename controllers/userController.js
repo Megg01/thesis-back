@@ -1,20 +1,35 @@
-const User = require("../models/user");
-const mongoose = require("mongoose");
+const User = require('../models/user');
+const mongoose = require('mongoose');
 
 // login
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-  
+
   User.findOne({ email: email }, (err, user) => {
     if (!user.validPassword(password)) {
-      return res.status(403).json({ message: "Хэрэглэгчийн нууц үг таарсангүй"});
+      return res
+        .status(403)
+        .json({ message: 'Хэрэглэгчийн нууц үг таарсангүй' });
     } else {
       return res.status(200).json(user);
     }
   });
-
 };
 
+// sign up
+const signup = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email: email }, (err, user) => {
+    if (!user.validPassword(password)) {
+      return res
+        .status(403)
+        .json({ message: 'Хэрэглэгчийн нууц үг таарсангүй' });
+    } else {
+      return res.status(200).json(user);
+    }
+  });
+};
 
 // get all
 const getUsers = async (req, res) => {
@@ -28,7 +43,7 @@ const getUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Буруу ID" });
+    return res.status(400).json({ message: 'Буруу ID' });
   }
 
   try {
@@ -37,7 +52,7 @@ const getUser = async (req, res) => {
     if (user) {
       res.status(200).json(user);
     } else {
-      res.status(404).json({ message: "Хэрэглэгч олдсонгүй" });
+      res.status(404).json({ message: 'Хэрэглэгч олдсонгүй' });
     }
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -62,7 +77,7 @@ const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Буруу ID" });
+    return res.status(400).json({ message: 'Буруу ID' });
   }
 
   try {
@@ -79,7 +94,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Буруу ID" });
+    return res.status(400).json({ message: 'Буруу ID' });
   }
 
   try {
@@ -92,6 +107,8 @@ const updateUser = async (req, res) => {
 };
 
 module.exports = {
+  login,
+  signup,
   getUsers,
   getUser,
   createUser,
