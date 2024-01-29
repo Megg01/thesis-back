@@ -1,41 +1,61 @@
-const User = require('../models/user');
-const mongoose = require('mongoose');
+const User = require("../models/user");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 // login
 const login = async (req, res, next) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  User.findOne({ email: email }, (err, user) => {
-    if (!user.validPassword(password)) {
-      return res
-        .status(403)
-        .json({ message: 'Хэрэглэгчийн нууц үг таарсангүй' });
-    } else {
-      return res.status(200).json(user);
-    }
-  });
+    User.findOne({ email: email }, (err, user) => {
+      if (!user.validPassword(password)) {
+        return res
+          .status(403)
+          .json({ message: "Хэрэглэгчийн нууц үг таарсангүй" });
+      } else {
+        return res.status(200).json(user);
+      }
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
 // sign up
 const signup = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  User.findOne({ email: email }, (err, user) => {
-    if (!user.validPassword(password)) {
-      return res
-        .status(403)
-        .json({ message: 'Хэрэглэгчийн нууц үг таарсангүй' });
+  try {
+    const { fname, lname, phoneNo, email, password } = req.body;
+    const user = await User.findOne({ email: email });
+    if (user) {
+      res
+        .status(201)
+        .json({ message: "Аль хэдийн бүртгэгдсэн майл хаяг байна" });
     } else {
-      return res.status(200).json(user);
+      const hashedPassword = await bcrypt.hash(password, 4);
+      const newUser = new User({
+        fname: fname,
+        lname: lname,
+        phoneNo: phoneNo,
+        email: email,
+        password: hashedPassword,
+      });
+      await newUser.save();
+      res.status(200).json({ message: "Амжилттай бүртгэгдлээ" });
     }
-  });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
 // get all
 const getUsers = async (req, res) => {
-  const users = await User.find({}).sort({ createdAt: -1 });
+  try {
+    const users = await User.find({}).sort({ createdAt: -1 });
 
-  res.status(200).json(users);
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
 // get a single
@@ -43,7 +63,7 @@ const getUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Буруу ID' });
+    return res.status(400).json({ message: "Буруу ID" });
   }
 
   try {
@@ -52,7 +72,7 @@ const getUser = async (req, res) => {
     if (user) {
       res.status(200).json(user);
     } else {
-      res.status(404).json({ message: 'Хэрэглэгч олдсонгүй' });
+      res.status(404).json({ message: "Хэрэглэгч олдсонгүй" });
     }
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -77,7 +97,7 @@ const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Буруу ID' });
+    return res.status(400).json({ message: "Буруу ID" });
   }
 
   try {
@@ -94,7 +114,7 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Буруу ID' });
+    return res.status(400).json({ message: "Буруу ID" });
   }
 
   try {

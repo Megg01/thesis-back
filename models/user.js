@@ -15,6 +15,7 @@ const userSchema = new Schema(
     },
     isAuth: {
       type: Boolean,
+      default: false,
       required: true,
     },
     age: {
