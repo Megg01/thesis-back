@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
 // sign up
 const signup = async (req, res, next) => {
   try {
-    const { fname, lname, phoneNo, email, password } = req.body;
+    const { fname, lname, email, password } = req.body;
     const user = await User.findOne({ email: email });
     if (user) {
       res
@@ -35,7 +35,6 @@ const signup = async (req, res, next) => {
       const newUser = new User({
         fname: fname,
         lname: lname,
-        phoneNo: phoneNo,
         email: email,
         password: hashedPassword,
       });

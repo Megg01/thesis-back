@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const Schema = mongoose.Schema;
 
@@ -32,10 +32,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    regNo: {
-      type: String,
-      required: () => this.isAuth,
-    },
   },
   { timestamps: true }
 );
@@ -48,4 +44,4 @@ userSchema.methods.validPassword = (password) => {
   return bcrypt.compareSync(password, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);
