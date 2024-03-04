@@ -29,7 +29,7 @@ const signup = async (req, res, next) => {
     if (user) {
       res
         .status(201)
-        .json({ message: "Аль хэдийн бүртгэгдсэн майл хаяг байна" });
+        .json({ message: "Аль хэдийн бүртгэгдсэн мэйл хаяг байна" });
     } else {
       const hashedPassword = await bcrypt.hash(password, 4);
       const newUser = new User({

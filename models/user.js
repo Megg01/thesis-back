@@ -19,12 +19,10 @@ const userSchema = new Schema(
       required: true,
     },
     age: {
-      type: String,
-      required: true,
+      type: Number,
     },
     phoneNo: {
       type: Number,
-      required: true,
     },
     email: {
       type: String,
@@ -35,22 +33,6 @@ const userSchema = new Schema(
       required: true,
     },
     regNo: {
-      type: String,
-      required: () => this.isAuth,
-    },
-    address: {
-      type: String,
-      required: () => this.isAuth,
-    },
-    imagePassportFace: {
-      type: String,
-      required: () => this.isAuth,
-    },
-    imagePassportFront: {
-      type: String,
-      required: () => this.isAuth,
-    },
-    imagePassportBack: {
       type: String,
       required: () => this.isAuth,
     },

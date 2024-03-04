@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/users");
-const carRoutes = require("./routes/cars");
 
 const app = express();
 
@@ -14,7 +13,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/users", userRoutes);
-app.use("/api/cars", carRoutes);
 
 mongoose
   .connect(process.env.ATLAS_URI)
