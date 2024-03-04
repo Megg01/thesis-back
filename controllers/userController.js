@@ -1,23 +1,36 @@
 const User = require("../models/user");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { createSecretToken } = require("../utils/secretToken");
 
 // login
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    User.findOne({ email: email }, (err, user) => {
-      if (!user.validPassword(password)) {
-        return res
-          .status(403)
-          .json({ message: "Хэрэглэгчийн нууц үг таарсангүй" });
+    const user = await User.findOne({ email: email });
+    if (user) {
+      const isValid = await bcrypt.compareSync(password, user.password);
+      if (!isValid) {
+        return res.status(403).json({
+          success: true,
+          message: "Хэрэглэгчийн нэр эсвэл нууц үг таарсангүй",
+        });
       } else {
-        return res.status(200).json(user);
+        const token = createSecretToken(user._id);
+        return res
+          .status(200)
+          .json({
+            success: true,
+            data: user,
+            token,
+            message: "Амжилттай нэвтэрлээ",
+          });
       }
-    });
+    }
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
@@ -39,10 +52,10 @@ const signup = async (req, res, next) => {
         password: hashedPassword,
       });
       await newUser.save();
-      res.status(200).json({ message: "Амжилттай бүртгэгдлээ" });
+      res.status(200).json({ success: true, message: "Амжилттай бүртгэгдлээ" });
     }
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
@@ -51,9 +64,9 @@ const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).sort({ createdAt: -1 });
 
-    res.status(200).json(users);
+    res.status(200).json({ success: true, data: users });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
@@ -69,12 +82,12 @@ const getUser = async (req, res) => {
     const user = await User.findById(id);
 
     if (user) {
-      res.status(200).json(user);
+      res.status(200).json({ success: true, data: user });
     } else {
-      res.status(404).json({ message: "Хэрэглэгч олдсонгүй" });
+      res.status(404).json({ success: false, message: "Хэрэглэгч олдсонгүй" });
     }
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
@@ -85,9 +98,9 @@ const createUser = async (req, res) => {
   try {
     const user = await User.create({ name });
 
-    res.status(200).json(user);
+    res.status(200).json({ success: true, data: user });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
@@ -102,9 +115,9 @@ const deleteUser = async (req, res) => {
   try {
     const user = await User.findOneAndDelete({ _id: id });
 
-    res.status(200).json(user);
+    res.status(200).json({ success: true, data: user });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 
@@ -113,15 +126,15 @@ const updateUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Буруу ID" });
+    return res.status(400).json({ success: false, message: "Буруу ID" });
   }
 
   try {
     const user = await User.findOneAndUpdate({ _id: id }, { ...req.body });
 
-    res.status(200).json(user);
+    res.status(200).json({ success: true, data: user });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, error: err.message });
   }
 };
 

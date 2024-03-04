@@ -40,8 +40,10 @@ userSchema.methods.generateHash = (password) => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(4), null);
 };
 
-userSchema.methods.validPassword = (password) => {
-  return bcrypt.compareSync(password, this.password);
-};
+// userSchema.methods.validPassword = (password) => {
+//   console.log("🚀 ~ password:", password);
+//   console.log("🚀 ~ this.password:", this.password);
+//   return bcrypt.compareSync(password, this.password);
+// };
 
 module.exports = mongoose.model("User", userSchema);
