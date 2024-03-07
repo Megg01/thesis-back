@@ -1,8 +1,8 @@
-const User = require("../models/user");
+const User = require("../models/user.model");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { createSecretToken } = require("../utils/secretToken");
+const { generateToken: createSecretToken } = require("../utils/secretToken");
 
 // login
 const login = async (req, res, next) => {
