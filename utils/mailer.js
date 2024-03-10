@@ -13,15 +13,14 @@ async function sendEmail(email, code) {
 
     const smtpUsername = "apikey";
 
-    const smtpPassword = process.env.SG_APIKEY;
+    const smtpPassword = process.env.SENDGRID_KEY;
 
-    var subject = "Verify your email";
+    var subject = "Баталгаажуулах имейл";
 
-    // The body of the email for recipients
     var body_html = `<!DOCTYPE> 
     <html>
       <body>
-        <p>Your authentication code is : </p> <b>${code}</b>
+        <p>Таны баталгаажуулах код : </p> <b>${code}</b>
       </body>
     </html>`;
 
@@ -36,7 +35,6 @@ async function sendEmail(email, code) {
       },
     });
 
-    // Specify the fields in the email.
     let mailOptions = {
       from: senderAddress,
       to: toAddress,

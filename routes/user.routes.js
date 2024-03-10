@@ -1,7 +1,5 @@
 const express = require("express");
 const {
-  login,
-  signup,
   getUsers,
   getUser,
   createUser,
@@ -9,11 +7,7 @@ const {
   deleteUser,
 } = require("../controllers/user.controller");
 
-const router = express.Router();
-
-router.post("/login", login);
-
-router.post("/signup", signup);
+const router = express.Router({ tags: ["User"] });
 
 router.get("/", getUsers);
 

@@ -18,9 +18,6 @@ const userSchema = new Schema(
       default: false,
       required: true,
     },
-    age: {
-      type: Number,
-    },
     phoneNo: {
       type: Number,
     },
@@ -33,17 +30,22 @@ const userSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+userSchema.virtual("incomes", {
+  ref: "Income",
+  foreignField: "user",
+  localField: "_id",
+});
+userSchema.virtual("expenses", {
+  ref: "Expense",
+  foreignField: "user",
+  localField: "_id",
+});
 
 userSchema.methods.generateHash = (password) => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(4), null);
 };
-
-// userSchema.methods.validPassword = (password) => {
-//   console.log("🚀 ~ password:", password);
-//   console.log("🚀 ~ this.password:", this.password);
-//   return bcrypt.compareSync(password, this.password);
-// };
 
 module.exports = mongoose.model("User", userSchema);

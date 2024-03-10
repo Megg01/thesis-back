@@ -2,7 +2,15 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output.json");
+
+const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const incomeRoutes = require("./routes/income.routes");
+const expenseRoutes = require("./routes/expense.routes");
+const { jwtMiddleware } = require("./middleware/authMiddleware");
 
 const app = express();
 
@@ -12,7 +20,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/users", userRoutes);
+app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use("/api/auth", authRoutes);
+app.use("/api/users", jwtMiddleware, userRoutes);
+app.use("/api/incomes", jwtMiddleware, incomeRoutes);
+app.use("/api/expenses", jwtMiddleware, expenseRoutes);
 
 mongoose
   .connect(process.env.ATLAS_URI)
@@ -22,5 +34,5 @@ mongoose
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.log("🚀 ~ err:", err);
   });
