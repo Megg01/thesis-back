@@ -11,6 +11,7 @@ const userRoutes = require("./routes/user.routes");
 const incomeRoutes = require("./routes/income.routes");
 const expenseRoutes = require("./routes/expense.routes");
 const transferRoutes = require("./routes/transfer.routes");
+const debtRoutes = require("./routes/debt.routes");
 const { jwtMiddleware } = require("./middleware/authMiddleware");
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/users", jwtMiddleware, userRoutes);
 app.use("/api/incomes", jwtMiddleware, incomeRoutes);
 app.use("/api/expenses", jwtMiddleware, expenseRoutes);
 app.use("/api/transfers", jwtMiddleware, transferRoutes);
+app.use("/api/debts", jwtMiddleware, debtRoutes);
 
 mongoose
   .connect(process.env.ATLAS_URI)

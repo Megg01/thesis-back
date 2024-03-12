@@ -48,6 +48,11 @@ userSchema.virtual("transfers", {
   foreignField: "user",
   localField: "_id",
 });
+userSchema.virtual("debts", {
+  ref: "Debt",
+  foreignField: "user",
+  localField: "_id",
+});
 
 userSchema.methods.generateHash = (password) => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(4), null);
