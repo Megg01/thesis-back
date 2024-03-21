@@ -39,18 +39,18 @@ app.post(
   bodyParser.raw({ type: "application/json" }),
   async function (req, res) {
     try {
-      const payloadString = req.body.toString();
+      const payload = req.body;
       const svixHeaders = req.headers;
 
       const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_KEY);
-      const evt = wh.verify(payloadString, svixHeaders);
+      const evt = wh.verify(payload, svixHeaders);
 
       const { id, ...attributes } = evt.data;
 
       switch (evt.type) {
         case "user.created": {
           const user = new User({
-            clerkUserId: id,
+            id: id,
             firstName: attributes.first_name,
             lastName: attributes.last_name,
           });

@@ -55,7 +55,7 @@ const deleteUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findOneAndDelete({ _id: id });
+    const user = await User.findOneAndDelete({ id: id });
 
     res.status(200).json({ success: true, data: user });
   } catch (err) {
@@ -72,7 +72,7 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findOneAndUpdate({ _id: id }, { ...req.body });
+    const user = await User.findOneAndUpdate({ id: id }, { ...req.body });
 
     res.status(200).json({ success: true, data: user });
   } catch (err) {

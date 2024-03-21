@@ -5,29 +5,29 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    first_name: {
+    id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    firstName: {
       type: String,
       required: true,
     },
-    last_name: {
+    lastName: {
       type: String,
       required: true,
     },
-    isAuth: {
-      type: Boolean,
-      default: false,
-      required: true,
-    },
-    phoneNo: {
+    phoneNumber: {
       type: Number,
     },
-    email: {
+    emailAddress: {
       type: String,
       required: true,
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
