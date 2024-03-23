@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
-const Webhook = require("svix");
+const { Webhook } = require("svix");
 const bodyParser = require("body-parser");
 
 const swaggerUi = require("swagger-ui-express");
@@ -20,6 +20,85 @@ const { updateUser, deleteUser } = require("./controllers/user.controller");
 
 const app = express();
 
+app.post(
+  "/api/webhooks",
+  bodyParser.raw({ type: "application/json" }),
+  async function (req, res) {
+    try {
+      const payload = req.body;
+      const headers = req.headers;
+
+      const svix_id = headers["svix-id"];
+      const svix_timestamp = headers["svix-timestamp"];
+      const svix_signature = headers["svix-signature"];
+
+      if (!svix_id || !svix_timestamp || !svix_signature) {
+        return new Response("Error occured -- no svix headers", {
+          status: 400,
+        });
+      }
+
+      const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_KEY);
+
+      let evt;
+
+      try {
+        evt = wh.verify(payload, {
+          "svix-id": svix_id,
+          "svix-timestamp": svix_timestamp,
+          "svix-signature": svix_signature,
+        });
+      } catch (error) {
+        console.log("🚀 ~ EVT error:", error);
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
+      console.log("🚀 ~ evt:", evt);
+
+      const { id, email_addresses, ...attributes } = evt?.data;
+      console.log("🚀 ~ id:", id);
+
+      console.log("🚀 ~ evt.type:", evt?.type);
+      const emailAddress = email_addresses[0]?.email_address;
+      switch (evt?.type) {
+        case "user.created": {
+          const user = new User({
+            id: id,
+            emailAddress: emailAddress,
+            firstName: attributes?.first_name,
+            lastName: attributes?.last_name,
+          });
+
+          await user.save();
+          break;
+        }
+        case "user.updated": {
+          await User.findOneAndUpdate({ id: id }, { ...req.body });
+          break;
+        }
+        case "user.deleted": {
+          await User.findOneAndDelete({ id: id });
+          break;
+        }
+      }
+      res.status(200).json({
+        success: true,
+        message: "Webhook received",
+      });
+    } catch (err) {
+      // Console log and return error
+      console.log("USER>DELUPCRE Error:", err.message);
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+);
+
 app.use(express.json());
 app.use((req, res, next) => {
   console.log(req.path, req.method);
@@ -33,64 +112,6 @@ app.use("/api/incomes", middleware, incomeRoutes);
 app.use("/api/expenses", middleware, expenseRoutes);
 app.use("/api/transfers", middleware, transferRoutes);
 app.use("/api/debts", middleware, debtRoutes);
-
-app.post(
-  "/api/webhooks",
-  bodyParser.raw({ type: "application/json" }),
-  async function (req, res) {
-    try {
-      const payload = req.body;
-      const svixHeaders = req.headers;
-
-      const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET_KEY);
-      const evt = wh.verify(payload, svixHeaders);
-
-      const { id, ...attributes } = evt.data;
-
-      switch (evt.type) {
-        case "user.created": {
-          const user = new User({
-            id: id,
-            firstName: attributes.first_name,
-            lastName: attributes.last_name,
-          });
-
-          await user.save();
-        }
-        case "user.updated": {
-          await updateUser(req, res);
-        }
-        case "user.deleted": {
-          await deleteUser(req, res);
-        }
-      }
-      res.status(200).json({
-        success: true,
-        message: "Webhook received",
-      });
-    } catch (err) {
-      // Console log and return error
-      console.log("Webhook failed to verify. Error:", err.message);
-      return res.status(400).json({
-        success: false,
-        message: err.message,
-      });
-    }
-
-    // Grab the ID and TYPE of the Webhook
-    const { id } = evt.data;
-    const eventType = evt.type;
-
-    console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-    // Console log the full payload to view
-    console.log("Webhook body:", evt.data);
-
-    return res.status(200).json({
-      success: true,
-      message: "Webhook received",
-    });
-  }
-);
 
 mongoose
   .connect(process.env.ATLAS_URI)

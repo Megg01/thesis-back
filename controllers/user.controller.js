@@ -1,6 +1,4 @@
 const User = require("../models/user.model");
-const mongoose = require("mongoose");
-
 // get all
 const getUsers = async (req, res) => {
   try {
@@ -16,7 +14,7 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!await User.findById(id)) {
     return res.status(400).json({ message: "Буруу ID" });
   }
 
@@ -50,7 +48,7 @@ const createUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!await User.findById(id)) {
     return res.status(400).json({ message: "Буруу ID" });
   }
 
@@ -67,7 +65,7 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!await User.findById(id)) {
     return res.status(400).json({ success: false, message: "Буруу ID" });
   }
 

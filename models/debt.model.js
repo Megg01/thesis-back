@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const debtSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
