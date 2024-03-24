@@ -36,22 +36,22 @@ const userSchema = new Schema(
 userSchema.virtual("incomes", {
   ref: "Income",
   foreignField: "user",
-  localField: "_id",
+  localField: "id",
 });
 userSchema.virtual("expenses", {
   ref: "Expense",
   foreignField: "user",
-  localField: "_id",
+  localField: "id",
 });
 userSchema.virtual("transfers", {
   ref: "Transfer",
   foreignField: "user",
-  localField: "_id",
+  localField: "id",
 });
 userSchema.virtual("debts", {
   ref: "Debt",
   foreignField: "user",
-  localField: "_id",
+  localField: "id",
 });
 
 userSchema.methods.generateHash = (password) => {

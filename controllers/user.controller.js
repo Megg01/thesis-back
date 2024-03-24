@@ -14,12 +14,12 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!await User.findById(id)) {
+  if (!(await User.findOne({ id: id }))) {
     return res.status(400).json({ message: "Буруу ID" });
   }
 
   try {
-    const user = await User.findById(id).populate("incomes");
+    const user = await User.findOne({ id: id });
 
     if (user) {
       res.status(200).json({ success: true, data: user });
@@ -48,7 +48,7 @@ const createUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!await User.findById(id)) {
+  if (!(await User.findOne({ id: id }))) {
     return res.status(400).json({ message: "Буруу ID" });
   }
 
@@ -65,7 +65,7 @@ const deleteUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!await User.findById(id)) {
+  if (!(await User.findOne({ id: id }))) {
     return res.status(400).json({ success: false, message: "Буруу ID" });
   }
 

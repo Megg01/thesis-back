@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
+const multer = require("multer");
 const Income = require("../models/income.model ");
+const { waitForDebugger } = require("inspector");
 
 // Get all incomes
 const getAllIncomes = async (req, res) => {
@@ -29,10 +31,14 @@ const getIncomeById = async (req, res) => {
 
 // Create new income
 const createIncome = async (req, res) => {
+  console.log("🚀 ~ createIncome ~ req.body:", req.body);
+
   const income = new Income({
     ...req.body,
-    user: req.user?.id,
+    user: req.body?.user,
   });
+
+  console.log("🚀 ~ createIncome ~ req.body:", income);
 
   try {
     const savedIncome = await income.save();
