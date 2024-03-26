@@ -9,7 +9,7 @@ const {
 
 const router = express.Router({ tags: ["User"] });
 
-router.get("/", getUsers);
+router.get("/all", getUsers);
 
 router.get("/:id", getUser);
 

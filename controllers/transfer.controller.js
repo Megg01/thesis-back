@@ -5,7 +5,7 @@ const Transfer = require("../models/transfer.model");
 // Get all transfers
 const getAllTransfers = async (req, res) => {
   try {
-    const transfers = await Transfer.find({ user: req.user.id });
+    const transfers = await Transfer.find({ user: req.body?.user });
     res.status(200).json({ success: true, data: transfers });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,7 +17,7 @@ const getTransferById = async (req, res) => {
   try {
     const transfer = await Transfer.findById(req.params.id);
     if (!transfer) {
-      return res.status(404).json({ message: "Transfer not found" });
+      return res.status(404).json({ message: "Шилжүүлэг олдсонгүй" });
     }
 
     if (transfer.user.toString() !== req.user.id.toString()) {
@@ -34,12 +34,14 @@ const getTransferById = async (req, res) => {
 const createTransfer = async (req, res) => {
   const transfer = new Transfer({
     ...req.body,
-    user: req.user?.id,
+    user: req.body?.user,
   });
 
   try {
     const savedTransfer = await transfer.save();
-    res.status(201).json({ success: true, data: savedTransfer });
+    res
+      .status(201)
+      .json({ success: true, message: "Амжилттай", data: savedTransfer });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -50,7 +52,7 @@ const updateTransfer = async (req, res) => {
   try {
     const transfer = await Transfer.findById(req.params.id);
     if (!transfer) {
-      return res.status(404).json({ message: "Transfer not found" });
+      return res.status(404).json({ message: "Шилжүүлэг олдсонгүй" });
     }
 
     if (transfer.user.toString() !== req.user.id.toString()) {
@@ -62,7 +64,11 @@ const updateTransfer = async (req, res) => {
       req.body,
       { new: true }
     );
-    res.status(200).json({ success: true, data: updatedTransfer });
+    res.status(200).json({
+      success: true,
+      data: updatedTransfer,
+      message: "Амжилттай шинэчлэгдлээ",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -73,7 +79,7 @@ const deleteTransfer = async (req, res) => {
   try {
     const transfer = await Transfer.findById(req.params.id);
     if (!transfer) {
-      return res.status(404).json({ message: "Transfer not found" });
+      return res.status(404).json({ message: "Шилжүүлэг олдсонгүй" });
     }
 
     if (transfer.user.toString() !== req.user.id.toString()) {

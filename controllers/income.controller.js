@@ -1,12 +1,9 @@
-const mongoose = require("mongoose");
-const multer = require("multer");
 const Income = require("../models/income.model ");
-const { waitForDebugger } = require("inspector");
 
 // Get all incomes
 const getAllIncomes = async (req, res) => {
   try {
-    const incomes = await Income.find({ user: req.user.id });
+    const incomes = await Income.find({ user: req.body?.user });
     res.status(200).json({ success: true, data: incomes });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,9 +17,6 @@ const getIncomeById = async (req, res) => {
     if (!income) {
       return res.status(404).json({ message: "Орлого олдсонгүй" });
     }
-    if (income.user.toString() !== req.user.id.toString()) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
     res.status(200).json({ success: true, data: income });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -31,18 +25,16 @@ const getIncomeById = async (req, res) => {
 
 // Create new income
 const createIncome = async (req, res) => {
-  console.log("🚀 ~ createIncome ~ req.body:", req.body);
-
   const income = new Income({
     ...req.body,
     user: req.body?.user,
   });
 
-  console.log("🚀 ~ createIncome ~ req.body:", income);
-
   try {
     const savedIncome = await income.save();
-    res.status(201).json({ success: true, data: savedIncome });
+    res
+      .status(201)
+      .json({ success: true, message: "Амжилттай", data: savedIncome });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -55,7 +47,7 @@ const updateIncome = async (req, res) => {
     if (!income) {
       return res.status(404).json({ message: "Орлого олдсонгүй" });
     }
-    if (income.user.toString() !== req.user.id.toString()) {
+    if (income.user.toString() !== req.body?.user.toString()) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -64,7 +56,11 @@ const updateIncome = async (req, res) => {
       req.body,
       { new: true }
     );
-    res.status(200).json({ success: true, data: updatedIncome });
+    res.status(200).json({
+      success: true,
+      data: updatedIncome,
+      message: "Амжилттай шинэчлэгдлээ",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -22,7 +22,7 @@ const app = express();
 
 app.post(
   "/api/webhooks",
-  bodyParser.raw({ type: "application/json", limit: "50mb" }),
+  bodyParser.raw({ type: "application/json" }),
   async function (req, res) {
     try {
       const payload = req.body;
@@ -103,16 +103,17 @@ app.use(express.json({ limit: "50mb" }));
 
 app.use((req, res, next) => {
   console.log(req.path, req.method);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
   next();
 });
 
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use("/api/auth", authRoutes);
-app.use("/api/users", middleware, userRoutes);
-app.use("/api/incomes", middleware, incomeRoutes);
-app.use("/api/expenses", middleware, expenseRoutes);
-app.use("/api/transfers", middleware, transferRoutes);
-app.use("/api/debts", middleware, debtRoutes);
+app.use("/api/user", middleware, userRoutes);
+app.use("/api/income", middleware, incomeRoutes);
+app.use("/api/expense", middleware, expenseRoutes);
+app.use("/api/transfer", middleware, transferRoutes);
+app.use("/api/debt", middleware, debtRoutes);
 
 mongoose
   .connect(process.env.ATLAS_URI)

@@ -9,7 +9,7 @@ const {
 
 const router = express.Router({ tags: ["Transfer"] });
 
-router.get("/", getAllTransfers);
+router.get("/all", getAllTransfers);
 
 router.get("/:id", getTransferById);
 

@@ -6,7 +6,6 @@ const expenseSchema = new Schema(
   {
     user: {
       type: String,
-      ref: "User",
       required: true,
     },
     value: {
@@ -24,7 +23,7 @@ const expenseSchema = new Schema(
     },
     wallet: {
       type: String,
-      required: true,
+      required: false,
     },
     date: {
       type: Date,

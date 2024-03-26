@@ -5,7 +5,7 @@ const Debt = require("../models/debt.model");
 // Get all debts for a specific user
 const getAllDebts = async (req, res) => {
   try {
-    const debts = await Debt.find({ user: req.user.id });
+    const debts = await Debt.find({ user: req.body?.user });
     res.status(200).json({ success: true, data: debts });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -34,12 +34,14 @@ const getDebtById = async (req, res) => {
 const createDebt = async (req, res) => {
   const debt = new Debt({
     ...req.body,
-    user: req.user?.id,
+    user: req.body?.user,
   });
 
   try {
     const savedDebt = await debt.save();
-    res.status(201).json({ success: true, data: savedDebt });
+    res
+      .status(201)
+      .json({ success: true, message: "Амжилттай", data: savedDebt });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -61,7 +63,13 @@ const updateDebt = async (req, res) => {
     const updatedDebt = await Debt.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    res.status(200).json({ success: true, data: updatedDebt });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: updatedDebt,
+        message: "Амжилттай шинэчлэгдлээ",
+      });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
