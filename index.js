@@ -98,11 +98,11 @@ app.post(
   }
 );
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.raw({ limit: "50mb" }));
 
 app.use((req, res, next) => {
   console.log(req.path, req.method);
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Content-Type", "application/json; multipart/form-data; charset=utf-8");
   next();
 });
 

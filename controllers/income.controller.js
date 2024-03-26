@@ -1,4 +1,5 @@
 const Income = require("../models/income.model ");
+const { default: uploadImage } = require("../utils/uploadImage");
 
 // Get all incomes
 const getAllIncomes = async (req, res) => {
@@ -45,9 +46,14 @@ const createIncome = async (req, res) => {
     ...req.body,
     user: req.body?.user,
   });
+  console.log("🚀 ~ createIncome ~ income:", income);
 
+  if (income?.image) {
+    await uploadImage(income?.image, "incomes");
+  }
   try {
     const savedIncome = await income.save();
+
     res
       .status(201)
       .json({ success: true, message: "Амжилттай", data: savedIncome });
