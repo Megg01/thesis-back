@@ -19,10 +19,41 @@ const getUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ id: id });
+    const user = await User.findOne({ id: id })
+      .populate("incomes")
+      .populate("expenses")
+      .populate("transfers")
+      .populate("debts")
+      .exec();
+
+    const totalIncome = user?.incomes?.reduce(
+      (total, cur) => total + cur?.value,
+      0
+    );
+    const totalExpense = user?.expenses?.reduce(
+      (total, cur) => total + cur?.value,
+      0
+    );
+    const totalTransfer = user?.transfers?.reduce(
+      (total, cur) => total + cur?.value,
+      0
+    );
+    const totalDebt = user?.debts?.reduce(
+      (total, cur) => total + cur?.value,
+      0
+    );
 
     if (user) {
-      res.status(200).json({ success: true, data: user });
+      res
+        .status(200)
+        .json({
+          success: true,
+          data: user,
+          totalIncome,
+          totalExpense,
+          totalTransfer,
+          totalDebt,
+        });
     } else {
       res.status(404).json({ success: false, message: "Хэрэглэгч олдсонгүй" });
     }

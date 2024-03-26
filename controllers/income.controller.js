@@ -3,8 +3,24 @@ const Income = require("../models/income.model ");
 // Get all incomes
 const getAllIncomes = async (req, res) => {
   try {
-    const incomes = await Income.find({ user: req.body?.user });
-    res.status(200).json({ success: true, data: incomes });
+    let query = { user: req.body?.user };
+
+    if (req.body?.sdate || req.body?.edate) {
+      query.date = {};
+
+      if (req.body?.sdate) {
+        query.date.$gte = new Date(req.body.sdate);
+      }
+      if (req.body.edate) {
+        query.date.$lte = new Date(req.body.edate);
+      }
+    }
+
+    const incomes = await Income.find(query);
+
+    const total = incomes.reduce((total, cur) => total + cur?.value, 0);
+
+    res.status(200).json({ success: true, data: incomes, total });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

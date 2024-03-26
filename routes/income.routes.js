@@ -9,7 +9,7 @@ const {
 
 const router = express.Router({ tags: ["Income"] });
 
-router.get("/all", getAllIncomes);
+router.post("/all", getAllIncomes);
 
 router.get("/:id", getIncomeById);
 

@@ -5,8 +5,23 @@ const Debt = require("../models/debt.model");
 // Get all debts for a specific user
 const getAllDebts = async (req, res) => {
   try {
-    const debts = await Debt.find({ user: req.body?.user });
-    res.status(200).json({ success: true, data: debts });
+    let query = { user: req.body?.user };
+
+    if (req.body?.sdate || req.body?.edate) {
+      query.date = {};
+
+      if (req.body?.sdate) {
+        query.date.$gte = new Date(req.body.sdate);
+      }
+      if (req.body.edate) {
+        query.date.$lte = new Date(req.body.edate);
+      }
+    }
+    const debts = await Debt.find(query);
+
+    const total = debts?.reduce((total, cur) => total + cur?.value, 0);
+
+    res.status(200).json({ success: true, data: debts, total });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -63,13 +78,11 @@ const updateDebt = async (req, res) => {
     const updatedDebt = await Debt.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: updatedDebt,
-        message: "Амжилттай шинэчлэгдлээ",
-      });
+    res.status(200).json({
+      success: true,
+      data: updatedDebt,
+      message: "Амжилттай шинэчлэгдлээ",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

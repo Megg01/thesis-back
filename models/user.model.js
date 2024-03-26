@@ -54,8 +54,4 @@ userSchema.virtual("debts", {
   localField: "id",
 });
 
-userSchema.methods.generateHash = (password) => {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(4), null);
-};
-
 module.exports = mongoose.model("User", userSchema);

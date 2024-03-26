@@ -1,12 +1,26 @@
-const mongoose = require("mongoose");
-
 const Transfer = require("../models/transfer.model");
 
 // Get all transfers
 const getAllTransfers = async (req, res) => {
   try {
-    const transfers = await Transfer.find({ user: req.body?.user });
-    res.status(200).json({ success: true, data: transfers });
+    let query = { user: req.body?.user };
+
+    if (req.body?.sdate || req.body?.edate) {
+      query.date = {};
+
+      if (req.body?.sdate) {
+        query.date.$gte = new Date(req.body.sdate);
+      }
+      if (req.body.edate) {
+        query.date.$lte = new Date(req.body.edate);
+      }
+    }
+
+    const transfers = await Transfer.find(query);
+
+    const total = transfers?.reduce((total, cur) => total + cur?.value, 0);
+
+    res.status(200).json({ success: true, data: transfers, total });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

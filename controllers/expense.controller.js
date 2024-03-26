@@ -4,8 +4,24 @@ const Expense = require("../models/expense.model");
 // Get all expenses
 const getAllExpenses = async (req, res) => {
   try {
-    const expenses = await Expense.find({ user: req.body?.user });
-    res.status(200).json({ success: true, data: expenses });
+    let query = { user: req.body?.user };
+
+    if (req.body?.sdate || req.body?.edate) {
+      query.date = {};
+
+      if (req.body?.sdate) {
+        query.date.$gte = new Date(req.body.sdate);
+      }
+      if (req.body.edate) {
+        query.date.$lte = new Date(req.body.edate);
+      }
+    }
+
+    const expenses = await Expense.find(query);
+
+    const total = expenses?.reduce((total, cur) => total + cur?.value, 0);
+
+    res.status(200).json({ success: true, data: expenses, total });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

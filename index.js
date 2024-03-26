@@ -16,7 +16,6 @@ const expenseRoutes = require("./routes/expense.routes");
 const transferRoutes = require("./routes/transfer.routes");
 const debtRoutes = require("./routes/debt.routes");
 const { middleware } = require("./middleware/authMiddleware");
-const { updateUser, deleteUser } = require("./controllers/user.controller");
 
 const app = express();
 

@@ -6,6 +6,7 @@ const incomeSchema = new Schema(
   {
     user: {
       type: String,
+      ref: "user",
       required: true,
     },
     value: {
