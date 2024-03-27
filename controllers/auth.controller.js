@@ -1,8 +1,5 @@
 const User = require("../models/user.model");
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { generateToken } = require("../utils/secretToken");
 
 // login
 const login = async (req, res, next) => {
@@ -18,11 +15,9 @@ const login = async (req, res, next) => {
           message: "Хэрэглэгчийн нэр эсвэл нууц үг таарсангүй",
         });
       } else {
-        const token = await generateToken(user._id);
         return res.status(200).json({
           success: true,
           data: user,
-          token: token,
           message: "Амжилттай нэвтэрлээ",
         });
       }
