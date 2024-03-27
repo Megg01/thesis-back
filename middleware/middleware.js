@@ -9,7 +9,7 @@ const middleware = async (req, res, next) => {
 
     const contentType = req.headers["content-type"];
 
-    if (contentType.includes("multipart/form-data")) {
+    if (contentType?.includes("multipart/form-data")) {
       upload.any()(req, res, next);
     } else {
       next();

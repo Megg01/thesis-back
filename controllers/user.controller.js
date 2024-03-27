@@ -14,7 +14,7 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   const { id } = req.params;
 
-  if (!(await User.findOne({ id: id }))) {
+  if (!(await User.find({ id: id }))) {
     return res.status(400).json({ message: "Буруу ID" });
   }
 
@@ -43,17 +43,24 @@ const getUser = async (req, res) => {
       0
     );
 
+    const allTransactions = [
+      ...user?.transfers,
+      ...user?.incomes,
+      ...user?.expenses,
+    ].sort((a, b) => b?.date - a?.date);
+
     if (user) {
-      res
-        .status(200)
-        .json({
-          success: true,
-          data: user,
+      res.status(200).json({
+        success: true,
+        data: {
+          ...user.toObject(),
           totalIncome,
           totalExpense,
           totalTransfer,
           totalDebt,
-        });
+          allTransactions,
+        },
+      });
     } else {
       res.status(404).json({ success: false, message: "Хэрэглэгч олдсонгүй" });
     }

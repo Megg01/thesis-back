@@ -34,6 +34,10 @@ const incomeSchema = new Schema(
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      default: "income",
+    },
   },
   { timestamps: true }
 );

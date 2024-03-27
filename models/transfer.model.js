@@ -34,6 +34,10 @@ const transferSchema = new Schema(
       type: Date,
       required: true,
     },
+    type: {
+      type: String,
+      default: "transfer",
+    },
   },
   { timestamps: true }
 );
