@@ -1,5 +1,7 @@
-const mongoose = require("mongoose");
+const User = require("../models/user.model");
 const Expense = require("../models/expense.model");
+const uploadImage = require("../utils/uploadImage");
+const deleteImage = require("../utils/deleteImage");
 
 // Get all expenses
 const getAllExpenses = async (req, res) => {
@@ -42,9 +44,23 @@ const getExpenseById = async (req, res) => {
 
 // Create new expense
 const createExpense = async (req, res) => {
+  const { user } = req.body;
+  let url = null;
+
+  if (req?.files?.[0]) {
+    url = await uploadImage(req?.files[0], user + new Date().valueOf());
+  } else if (req.body?.image) {
+    url = await uploadImage(req.body?.image, user + new Date().valueOf());
+  }
+
+  if (!(await User.findOne({ id: user }))) {
+    return res.status(400).json({ message: "Ийм хэрэглэгч байхгүй байна" });
+  }
+
   const expense = new Expense({
     ...req.body,
-    user: req.body?.user,
+    user,
+    image: url?.url,
   });
 
   try {
@@ -90,11 +106,13 @@ const deleteExpense = async (req, res) => {
     if (!expense) {
       return res.status(404).json({ message: "Зарлага олдсонгүй" });
     }
-    if (expense.user.toString() !== req.user.id.toString()) {
-      return res.status(401).json({ message: "Unauthorized" });
+
+    if (expense?.image) {
+      await deleteImage(expense.image);
     }
 
-    await expense.remove();
+    await expense.deleteOne();
+
     res.status(200).json({ success: true, message: "Амжилттай устлаа" });
   } catch (error) {
     res.status(500).json({ message: error.message });

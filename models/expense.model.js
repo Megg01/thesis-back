@@ -6,6 +6,7 @@ const expenseSchema = new Schema(
   {
     user: {
       type: String,
+      ref: "user",
       required: true,
     },
     value: {

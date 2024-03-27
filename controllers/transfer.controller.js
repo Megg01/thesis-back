@@ -1,4 +1,6 @@
 const Transfer = require("../models/transfer.model");
+const User = require("../models/user.model");
+const deleteImage = require("../utils/deleteImage");
 
 // Get all transfers
 const getAllTransfers = async (req, res) => {
@@ -46,12 +48,26 @@ const getTransferById = async (req, res) => {
 
 // Create a new transfer
 const createTransfer = async (req, res) => {
-  const transfer = new Transfer({
-    ...req.body,
-    user: req.body?.user,
-  });
-
   try {
+    const { user } = req.body;
+    let url = null;
+
+    if (req?.files?.[0]) {
+      url = await uploadImage(req?.files[0], user + new Date().valueOf());
+    } else if (req.body?.image) {
+      url = await uploadImage(req.body?.image, user + new Date().valueOf());
+    }
+
+    if (!(await User.findOne({ id: user }))) {
+      return res.status(400).json({ message: "Ийм хэрэглэгч байхгүй байна" });
+    }
+
+    const transfer = new Transfer({
+      ...req.body,
+      image: url?.url,
+      user,
+    });
+
     const savedTransfer = await transfer.save();
     res
       .status(201)
@@ -96,11 +112,11 @@ const deleteTransfer = async (req, res) => {
       return res.status(404).json({ message: "Шилжүүлэг олдсонгүй" });
     }
 
-    if (transfer.user.toString() !== req.user.id.toString()) {
-      return res.status(401).json({ message: "Unauthorized" });
+    if (transfer?.image) {
+      await deleteImage(transfer.image);
     }
 
-    await transfer.remove();
+    await transfer.deleteOne();
     res.status(200).json({ success: true, message: "Амжилттай устлаа" });
   } catch (error) {
     res.status(500).json({ message: error.message });

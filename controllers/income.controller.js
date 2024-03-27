@@ -1,5 +1,7 @@
 const Income = require("../models/income.model ");
-const { default: uploadImage } = require("../utils/uploadImage");
+const User = require("../models/user.model");
+const uploadImage = require("../utils/uploadImage");
+const deleteImage = require("../utils/deleteImage");
 
 // Get all incomes
 const getAllIncomes = async (req, res) => {
@@ -42,15 +44,28 @@ const getIncomeById = async (req, res) => {
 
 // Create new income
 const createIncome = async (req, res) => {
+  const { user } = req.body;
+  let url = null;
+
+  if (req?.files?.[0]) {
+    url = await uploadImage(req?.files[0], user + new Date().valueOf());
+  } else if (req.body?.image) {
+    url = await uploadImage(req.body?.image, user + new Date().valueOf());
+  }
+
+  if (!(await User.findOne({ id: user }))) {
+    return res.status(400).json({ message: "Ийм хэрэглэгч байхгүй байна" });
+  }
+
   const income = new Income({
     ...req.body,
-    user: req.body?.user,
+    image: url?.url,
+    user,
   });
-  console.log("🚀 ~ createIncome ~ income:", income);
 
-  if (income?.image) {
-    await uploadImage(income?.image, "incomes");
-  }
+  // if (income?.image) {
+  //   await uploadImage(income?.image, "incomes");
+  // }
   try {
     const savedIncome = await income.save();
 
@@ -92,14 +107,19 @@ const updateIncome = async (req, res) => {
 const deleteIncome = async (req, res) => {
   try {
     const income = await Income.findById(req.params.id);
+
     if (!income) {
       return res.status(404).json({ message: "Орлого олдсонгүй" });
     }
-    if (income.user.toString() !== req.user.id.toString()) {
-      return res.status(401).json({ message: "Unauthorized" });
+    // if (income.user.toString() !== req.user.id.toString()) {
+    //   return res.status(401).json({ message: "Unauthorized" });
+    // }
+
+    if (income?.image) {
+      await deleteImage(income.image);
     }
 
-    await income.remove();
+    await income.deleteOne();
     res.status(200).json({ success: true, message: "Амжилттай устлаа" });
   } catch (error) {
     res.status(500).json({ message: error.message });

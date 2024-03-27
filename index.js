@@ -15,7 +15,7 @@ const incomeRoutes = require("./routes/income.routes");
 const expenseRoutes = require("./routes/expense.routes");
 const transferRoutes = require("./routes/transfer.routes");
 const debtRoutes = require("./routes/debt.routes");
-const { middleware } = require("./middleware/authMiddleware");
+const middleware = require("./middleware/middleware");
 
 const app = express();
 
@@ -97,12 +97,12 @@ app.post(
     }
   }
 );
-
-app.use(express.raw({ limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use((req, res, next) => {
   console.log(req.path, req.method);
-  res.setHeader("Content-Type", "application/json; multipart/form-data; charset=utf-8");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
   next();
 });
 
