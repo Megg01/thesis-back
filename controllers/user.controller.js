@@ -43,11 +43,11 @@ const getUser = async (req, res) => {
       0
     );
 
-    const allTransactions = [
-      ...user?.transfers,
-      ...user?.incomes,
-      ...user?.expenses,
-    ].sort((a, b) => b?.date - a?.date);
+    // const allTransactions = [
+    //   ...user?.transfers,
+    //   ...user?.incomes,
+    //   ...user?.expenses,
+    // ].sort((a, b) => b?.date - a?.date);
 
     if (user) {
       res.status(200).json({
@@ -58,7 +58,7 @@ const getUser = async (req, res) => {
           totalExpense,
           totalTransfer,
           totalDebt,
-          allTransactions,
+          // allTransactions,
         },
       });
     } else {

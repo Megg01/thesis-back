@@ -106,14 +106,16 @@ const updateIncome = async (req, res) => {
 // Delete income by ID
 const deleteIncome = async (req, res) => {
   try {
-    const income = await Income.findById(req.params.id);
+    const { user } = req.body;
 
+    if (!(await User.findOne({ id: user }))) {
+      return res.status(400).json({ message: "Ийм хэрэглэгч байхгүй байна" });
+    }
+
+    const income = await Income.findById(req.params.id);
     if (!income) {
       return res.status(404).json({ message: "Орлого олдсонгүй" });
     }
-    // if (income.user.toString() !== req.user.id.toString()) {
-    //   return res.status(401).json({ message: "Unauthorized" });
-    // }
 
     if (income?.image) {
       await deleteImage(income.image);

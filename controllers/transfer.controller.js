@@ -68,7 +68,9 @@ const createTransfer = async (req, res) => {
       user,
     });
 
+    console.log("ENE hurtel yvsn", transfer);
     const savedTransfer = await transfer.save();
+
     res
       .status(201)
       .json({ success: true, message: "Амжилттай", data: savedTransfer });
@@ -107,6 +109,11 @@ const updateTransfer = async (req, res) => {
 // Delete a transfer by ID
 const deleteTransfer = async (req, res) => {
   try {
+    const { user } = req.body;
+
+    if (!(await User.findOne({ id: user }))) {
+      return res.status(400).json({ message: "Ийм хэрэглэгч байхгүй байна" });
+    }
     const transfer = await Transfer.findById(req.params.id);
     if (!transfer) {
       return res.status(404).json({ message: "Шилжүүлэг олдсонгүй" });

@@ -102,6 +102,11 @@ const updateExpense = async (req, res) => {
 // Delete expense by ID
 const deleteExpense = async (req, res) => {
   try {
+    const { user } = req.body;
+
+    if (!(await User.findOne({ id: user }))) {
+      return res.status(400).json({ message: "Ийм хэрэглэгч байхгүй байна" });
+    }
     const expense = await Expense.findById(req.params.id);
     if (!expense) {
       return res.status(404).json({ message: "Зарлага олдсонгүй" });
